@@ -1,6 +1,5 @@
 import random 
 import cocotb
-from cocotb.clock import clock
 from cocotb.triggers import timer,RisingEdge
 
 @cocotb.cocoroutine
@@ -22,16 +21,16 @@ def scrambler_test(dut):
     
     dut.log.info("Start if test!")            
     
-    await Timer(10, units="ns")
+    yield Timer(10, units="ns")
     dut.log.info("Drive 0 to RST_N!")
     dut.RST_N=0
                 
-    await Timer(10, units="ns")
+    yield Timer(10, units="ns")
     dut.log.info("Drive 1 to RST_N!")
     dut.RST_N=1
     
     for cycle in range (100):
-        await timer(5,units="ns")
+        yield timer(5,units="ns")
         clk=~clk
     
     dut.log.info("Test is Done!")
