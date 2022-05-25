@@ -68,7 +68,21 @@ module scrambler(CLK,
   // register xx_r
   assign xx_r$D_IN = EN_seed ? seed_value : MUX_xx_r$write_1__VAL_2 ;
   assign xx_r$EN = EN_seed || EN_out ;
+  
+  `ifdef BSV_ASSIGNMENT_DELAY
+  `else
+  `define BSV_ASSIGNMENT_DELAY
+  `endif
 
+  `ifdef BSV_POSITIVE_RESET
+  `define BSV_RESET_VALUE 1'b1
+  `define BSV_RESET_EDGE posedge
+  `else
+  `define BSV_RESET_VALUE 1'b0
+  `define BSV_RESET_EDGE negedge
+  `endif
+  
+  
   // handling of inlined registers
   
   always@(posedge CLK)
@@ -92,7 +106,15 @@ module scrambler(CLK,
     begin
       if (ff$EN) ff <= `BSV_ASSIGNMENT_DELAY ff$D_IN;
     end
-
+  
+  `ifdef COCOTB_SIM
+  initial
+  begin
+    $dumpfile ("scrambler_dump.vcd");
+    $dumpvars (0,scrambler_dump);
+    #1;
+  end
+  `endif
   // synopsys translate_off
   `ifdef BSV_NO_INITIAL_BLOCKS
   `else // not BSV_NO_INITIAL_BLOCKS
